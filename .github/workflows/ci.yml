@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['19.10.0', '']
+        nxf_ver: ['20.07.0', '']
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
@@ -34,13 +34,13 @@ jobs:
 
       - name: Build new docker image
         if: env.GIT_DIFF
-        run: docker build --no-cache . -t nfcore/babysarek:dev
+        run: docker build --no-cache . -t fhanssen/babysarek:dev
 
       - name: Pull docker image
         if: ${{ !env.GIT_DIFF }}
         run: |
-          docker pull nfcore/babysarek:dev
-          docker tag nfcore/babysarek:dev nfcore/babysarek:dev
+          docker pull fhanssen/babysarek:dev
+          docker tag fhanssen/babysarek:dev fhanssen/babysarek:dev
 
       - name: Install Nextflow
         run: |
