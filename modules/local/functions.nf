@@ -64,6 +64,6 @@ def saveFiles(Map args) {
 def extract_fastq(tsvFile) {
     Channel.from(tsvFile)
         .splitCsv(sep: '\t')
-        .map { row -> return [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ]
+        .map { row -> [ row[0], file(row[1], checkIfExists: true), file(row[2], checkIfExists: true) ]
     }
 }
