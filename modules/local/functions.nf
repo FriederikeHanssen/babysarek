@@ -57,3 +57,13 @@ def saveFiles(Map args) {
         }
     }
 }
+
+// Channeling the TSV file containing FASTQ or BAM
+// Format is: "subject gender status sample lane fastq1 fastq2"
+// or: "subject gender status sample lane bam"
+def extract_fastq(tsvFile) {
+    Channel.from(tsvFile)
+        .splitCsv(sep: '\t\s')
+        .map { row -> return [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ]
+    }
+}

@@ -25,9 +25,16 @@ nextflow.enable.dsl=2
 ================================================================================
 */
 
-// include {
-   
-// } from './modules/local/functions'
+/*
+================================================================================
+                        INCLUDE SAREK FUNCTIONS
+================================================================================
+*/
+
+include {
+    extract_fastq;
+} from './modules/local/functions'
+
 /*
 ================================================================================
                          SET UP CONFIGURATION VARIABLES
@@ -72,7 +79,7 @@ include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addPara
 ================================================================================
 */
 
-//include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf'
+include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf'
 
 /*
 ================================================================================
@@ -81,10 +88,11 @@ include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addPara
 */
 
 if (params.input) { 
-    Channel.from(params.input)
-           .map { row -> [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] }
-           .ifEmpty { exit 1, "params.input was empty - no input files supplied" }
-           .set { ch_input }
+    // Channel.from(params.input)
+    //        .map { row -> [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] }
+    //        .ifEmpty { exit 1, "params.input was empty - no input files supplied" }
+    //        .set { ch_input }
+    ch_input = extract_fastq(params.input)
 
 } else { 
     exit 1, "Input samplesheet file not specified!" 
@@ -104,14 +112,24 @@ workflow {
     //     .set { ch_raw_reads }
     //ch_input.dump()
 
+    //OPTION 1: Use seqkit
     PREPROCESSING(ch_input)
 
     split_read_pairs = PREPROCESSING.out.split_reads.map{
         key, reads ->
             //TODO maybe this can be replaced by a regex to include part_001 etc.
+
+            //sorts list of split fq files by :
+            //[R1.part_001, R2.part_001, R1.part_002, R2.part_002,R1.part_003, R2.part_003,...]
+            //TODO: determine whether it is possible to have an uneven number of parts, so remainder: true woud need to be used
             return [key, reads.sort{ a,b -> a.getName().tokenize('.')[ a.getName().tokenize('.').size() - 3] <=> b.getName().tokenize('.')[ b.getName().tokenize('.').size() - 3]}
                                        .collate(2)]
     }.transpose()
+
+    //OPTION 2: Use nextflow build in
+    //ch_input.splitFastq( by: 10000 , file:true, pe: true, compress: true).set{split_read_pairs}
+
+
     split_read_pairs.dump()
 
 
