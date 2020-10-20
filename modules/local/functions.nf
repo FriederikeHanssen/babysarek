@@ -63,7 +63,7 @@ def saveFiles(Map args) {
 // or: "subject gender status sample lane bam"
 def extract_fastq(tsvFile) {
     Channel.from(tsvFile)
-        .splitCsv(sep: ' ')
+        .splitCsv(sep: '\t')
         .map { row -> return [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ]
     }
 }
