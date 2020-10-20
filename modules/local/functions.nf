@@ -62,8 +62,13 @@ def saveFiles(Map args) {
 // Format is: "subject gender status sample lane fastq1 fastq2"
 // or: "subject gender status sample lane bam"
 def extract_fastq(tsvFile) {
-    Channel.from(tsvFile)
+      Channel.from(tsvFile)
         .splitCsv(sep: '\t')
-        .map { row -> [ row[0], file(row[1], checkIfExists: true), file(row[2], checkIfExists: true) ]
+        .map { row ->
+            def meta = [:]
+            meta.patient = row[0]
+            read1   = file(row[1], checkIfExists: true)
+            read2   = file(row[2], checkIfExists: true)
+        return [meta, [read1, read2]]
     }
 }
