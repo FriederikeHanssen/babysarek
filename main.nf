@@ -66,7 +66,7 @@ def modules = params.modules.clone()
                        INCLUDE LOCAL PIPELINE SUBWORKFLOWS
 ================================================================================
 */
-include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addParams( seqkit_options: modules['seqkit'])
+include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addParams( seqkit_options: modules['seqkit'], bwamem2_options: modules['bwamem2'])
 /*
 ================================================================================
                         INCLUDE nf-core PIPELINE MODULES
@@ -110,27 +110,28 @@ workflow {
     //     .splitCsv(header:true, sep:',')
     //     .map { check_samplesheet_paths(it) }
     //     .set { ch_raw_reads }
-    //ch_input.dump()
+    ch_input.dump()
+    if (params.nf){
+        //OPTION 1: Use nextflow build in
+        ch_input.splitFastq( by: 100000 , file:true, pe: true, compress: true).set{split_read_pairs}
+    }else{
+        //OPTION 2 Use seqkit
+        PREPROCESSING(ch_input)
 
-    //OPTION 1: Use seqkit
-    PREPROCESSING(ch_input)
+        split_read_pairs = PREPROCESSING.out.split_reads.map{
+            key, reads ->
+                //TODO maybe this can be replaced by a regex to include part_001 etc.
 
-    split_read_pairs = PREPROCESSING.out.split_reads.map{
-        key, reads ->
-            //TODO maybe this can be replaced by a regex to include part_001 etc.
-
-            //sorts list of split fq files by :
-            //[R1.part_001, R2.part_001, R1.part_002, R2.part_002,R1.part_003, R2.part_003,...]
-            //TODO: determine whether it is possible to have an uneven number of parts, so remainder: true woud need to be used
-            return [key, reads.sort{ a,b -> a.getName().tokenize('.')[ a.getName().tokenize('.').size() - 3] <=> b.getName().tokenize('.')[ b.getName().tokenize('.').size() - 3]}
-                                       .collate(2)]
-    }.transpose()
-
-    //OPTION 2: Use nextflow build in
-    //ch_input.splitFastq( by: 10000 , file:true, pe: true, compress: true).set{split_read_pairs}
-
-
+                //sorts list of split fq files by :
+                //[R1.part_001, R2.part_001, R1.part_002, R2.part_002,R1.part_003, R2.part_003,...]
+                //TODO: determine whether it is possible to have an uneven number of parts, so remainder: true woud need to be used
+                return [key, reads.sort{ a,b -> a.getName().tokenize('.')[ a.getName().tokenize('.').size() - 3] <=> b.getName().tokenize('.')[ b.getName().tokenize('.').size() - 3]}
+                                        .collate(2)]
+        }.transpose()
+    }
     split_read_pairs.dump()
+
+
 
 
     

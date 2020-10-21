@@ -62,13 +62,17 @@ def saveFiles(Map args) {
 // Format is: "subject gender status sample lane fastq1 fastq2"
 // or: "subject gender status sample lane bam"
 def extract_fastq(tsvFile) {
-      Channel.from(tsvFile)
+      Channel.from(file(tsvFile))
         .splitCsv(sep: '\t')
         .map { row ->
-            def meta = [:]
-            meta.patient = row[0]
+            id = row[0]
             read1   = file(row[1], checkIfExists: true)
             read2   = file(row[2], checkIfExists: true)
-        return [meta, [read1, read2]]
+        return [id, read1, read2]
     }
+}
+
+def return_file(it) {
+    if (!file(it).exists()) exit 1, "Missing file in TSV file: ${it}, see --help for more information"
+    return file(it)
 }
