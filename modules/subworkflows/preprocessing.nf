@@ -19,7 +19,7 @@ workflow PREPROCESSING {
 
     main:
         SPLIT_FASTQ(reads)
-        split_reads = PREPROCESSING.out.split_reads.map{
+        split_reads = SPLIT_FASTQ.out.map{
             key, reads ->
                 //TODO maybe this can be replaced by a regex to include part_001 etc.
 
