@@ -31,6 +31,9 @@ workflow PREPROCESSING {
         }.transpose()
 
         BWAMEM2_INDEX(fasta)
+
+        split_reads.dump()
+        BWAMEM2_INDEX.out.dump()
         MAP(split_reads, BWAMEM2_INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
 
 
