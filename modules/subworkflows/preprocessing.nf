@@ -22,7 +22,7 @@ workflow PREPROCESSING {
         split_reads = SPLIT_FASTQ.out
 
         BWAMEM2_INDEX(fasta)
-        //MAP(split_reads, INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
+        MAP(split_reads, INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
 
 
 
