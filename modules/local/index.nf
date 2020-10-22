@@ -3,7 +3,7 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 
 process BWAMEM2_INDEX {
     tag "${fasta}"
-
+    label 'process_high'
     //publishDir "${params.outdir}",
      //   mode: params.publish_dir_mode,
       //  saveAs: { params.save_reference ? filename -> saveFiles(filename:filename, options:params.options, publish_dir:'reference_genome/BWAIndex/${it}', publish_id:'') : null}
