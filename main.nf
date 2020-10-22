@@ -33,6 +33,7 @@ nextflow.enable.dsl=2
 
 include {
     extract_fastq;
+    has_extension;
 } from './modules/local/functions'
 
 /*
@@ -87,16 +88,29 @@ include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addPara
 ================================================================================
 */
 
-if (params.input) { 
-    // Channel.from(params.input)
-    //        .map { row -> [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] }
-    //        .ifEmpty { exit 1, "params.input was empty - no input files supplied" }
-    //        .set { ch_input }
+if (params.input && (has_extension(params.input, "tsv"))) { 
     ch_input = extract_fastq(params.input)
-
-} else { 
-    exit 1, "Input samplesheet file not specified!" 
+} else {
+    if (params.input){ 
+        Channel.from(params.input)
+           .map { row -> [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] }
+           .ifEmpty { exit 1, "params.input was empty - no input files supplied" }
+           .set { ch_input }
+    }  else{
+        exit 1, "Input  not specified!" 
+    }
 }
+
+// Check if genome exists in the config file
+if (params.genomes && !params.genomes.containsKey(params.genome) && !params.igenomes_ignore) {
+    exit 1, "The provided genome '${params.genome}' is not available in the iGenomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
+} else if (params.genomes && !params.genomes.containsKey(params.genome) && params.igenomes_ignore) {
+    exit 1, "The provided genome '${params.genome}' is not available in the genomes file. Currently the available genomes are ${params.genomes.keySet().join(", ")}"
+}
+
+params.fasta      = params.genome ? params.genomes[params.genome].fasta                   ?: false : false
+fasta             = params.fasta  ? file(params.fasta)             : file("${params.outdir}/no_file")
+
 
 workflow {
 
@@ -116,7 +130,7 @@ workflow {
         ch_input.splitFastq( by: 100000 , file:true, pe: true, compress: true).set{split_read_pairs}
     }else{
         //OPTION 2 Use seqkit
-        PREPROCESSING(ch_input)
+        PREPROCESSING(ch_input, fasta)
 
         split_read_pairs = PREPROCESSING.out.split_reads.map{
             key, reads ->

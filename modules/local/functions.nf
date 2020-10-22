@@ -76,3 +76,8 @@ def return_file(it) {
     if (!file(it).exists()) exit 1, "Missing file in TSV file: ${it}, see --help for more information"
     return file(it)
 }
+
+// Check file extension
+def has_extension(it, extension) {
+    it.toString().toLowerCase().endsWith(extension.toLowerCase())
+}
