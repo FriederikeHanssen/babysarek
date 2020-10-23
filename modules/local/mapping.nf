@@ -27,7 +27,7 @@ process MAP{
     script:
     def software = getSoftwareName(task.process)
     //        -R \"${readGroup}\" \
-  //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
+    //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
     """
     bwa-mem2 mem ${options.args} -t ${task.cpus} ${reference} ${reads} | samtools sort -@ ${task.cpus} -O cram
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
