@@ -12,9 +12,9 @@ process MAP{
     
     conda (params.enable_conda ? "bioconda::bwa-mem2=2.1 bioconda::samtools=1.10" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/bwa-mem2:2.0--he513fc3_0" //version does not match with conda, but conda version is more up to date
+        container "https://depot.galaxyproject.org/singularity/bwa-mem2:2.1--he513fc3_0" //version does not match with conda, but conda version is more up to date
     } else {
-        container "quay.io/biocontainers/bwa-mem2:2.0--he513fc3_0"//version does not match with conda, but conda version is more up to date
+        container "quay.io/biocontainers/bwa-mem2:2.1--he513fc3_0"//version does not match with conda, but conda version is more up to date
     }
 
     input:
@@ -30,7 +30,8 @@ process MAP{
     //        -R \"${readGroup}\" \
     //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
     """
-    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -O cram
+    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} 
+    samtools sort -@ ${task.cpus} -O cram *.bam
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
     //samtools may need different memory setting
