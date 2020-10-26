@@ -19,6 +19,7 @@ process MAP{
 
     input:
         tuple val(name), path(reads)
+        path(fasta)
         path (reference)
 
     output:
@@ -29,7 +30,7 @@ process MAP{
     //        -R \"${readGroup}\" \
     //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
     """
-    bwa-mem2 mem ${options.args} -t ${task.cpus} ${reference} ${reads} | samtools sort -@ ${task.cpus} -O cram
+    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -O cram
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
     //samtools may need different memory setting

@@ -34,7 +34,8 @@ workflow PREPROCESSING {
 
         split_reads.dump()
         BWAMEM2_INDEX.out.dump()
-        MAP(split_reads, BWAMEM2_INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
+        
+        MAP(split_reads, fasta, BWAMEM2_INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
 
 
 
