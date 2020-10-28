@@ -23,8 +23,8 @@ process MERGE_BAM {
         tuple val(name), path("*.cram"), emit: cram
 
     script:
-    name = options.suffix ? "${meta.id}.${options.suffix}" : "${meta.id}"
+    def name_2 = options.suffix ? "${name}.${options.suffix}" : "${name}"
     """
-    samtools merge --threads ${task.cpus} ${name}.cram ${bam}
+    samtools merge --threads ${task.cpus} ${name_2}.cram ${cram}
     """
 }

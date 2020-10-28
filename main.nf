@@ -96,8 +96,16 @@ if (params.input && (has_extension(params.input, "tsv"))) {
            .map { row -> [ row[0], file(row[1][0], checkIfExists: true), file(row[1][1], checkIfExists: true) ] }
            .ifEmpty { exit 1, "params.input was empty - no input files supplied" }
            .set { ch_input }
-    }  else{
-        exit 1, "Input  not specified!" 
+    }  else {
+        if (params.input_test) {
+            Channel
+            .fromFilePairs(params.input_test, size: params.single_end ? 1 : 2)
+            .ifEmpty { exit 1, "Cannot find any reads matching: ${params.input_test}\nNB: Path needs to be enclosed in quotes!\nIf this is single-end data, please specify --single_end on the command line." }
+            .into { ch_input }
+        } 
+        else    {
+            exit 1, "Input  not specified!" 
+        }
     }
 }
 
