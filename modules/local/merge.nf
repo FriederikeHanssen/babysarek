@@ -7,7 +7,7 @@ process MERGE_BAM {
     label 'process_medium'
 
     publishDir params.outdir, mode: params.publish_dir_mode,
-        saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:getSoftwareName(task.process), publish_id:meta.id) }
+        saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:getSoftwareName(task.process), publish_id:'') }
 
     conda (params.enable_conda ? "bioconda::samtools=1.10" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
@@ -17,16 +17,17 @@ process MERGE_BAM {
     }
 
     input:
-        tuple val(name), path(cram)
+        tuple val(name), path(bam)
+        path(fasta)
 
     output:
-        tuple val(name), path("*.cram"), emit: cram
+        tuple val(name), path("*.cram")
 
     script:
     def name_2 = options.suffix ? "${name}.${options.suffix}" : "${name}"
     """
-    samtools merge --threads ${task.cpus} ${name_2}.cram ${cram}
+    samtools merge --threads ${task.cpus} - ${bam} | samtools view -T ${fasta} -C -o ${name_2}.cram -
     """
     //TODO this could also be done with sambamba, which is apaprently much faster, all this tool replacement would require quiet a bit of benchmarking etc.
-    
+    // | samtools view -T ${fasta} -C -o ${name}.${part}.cram -
 }

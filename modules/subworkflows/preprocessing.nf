@@ -11,7 +11,7 @@ include { BWAMEM2_INDEX   } from '../local/index.nf'
 include { MERGE_BAM } from '../local/merge.nf' addParams( options: params.bwamem2_options  )
 include { MD_GATK} from '../local/md_gatk.nf' addParams( options: params.md_gatk_options  )
 include { MD_ADAM} from '../local/md_adam.nf' addParams( options: params.md_adam_options  )
-include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( options: params.md_sambamba_options  )
+//include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( options: params.md_sambamba_options  )
 
 workflow PREPROCESSING {
 
@@ -33,15 +33,22 @@ workflow PREPROCESSING {
         }.transpose()
 
         BWAMEM2_INDEX(fasta)
-
-        split_reads.dump()
-        BWAMEM2_INDEX.out.dump()
         
         MAP(split_reads, fasta, BWAMEM2_INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
 
         //Does the channel have to be merged somehow?
-        MERGE_BAM(MAP.out)
+        mapped = MAP.out
 
+        mapped_grouped = mapped.groupTuple()
+        mapped_grouped.dump()
+        MERGE_BAM(mapped_grouped, fasta)
+        // merge_bam_out = MERGE_BAM.out
+        // merge_bam_out.dump()
+        if(params.gatk){
+            MD_GATK(MERGE_BAM.out, fasta)
+        }else{
+            MD_ADAM(MERGE_BAM.out, fasta)
+        }
 
 
     // Step 1
