@@ -23,16 +23,18 @@ process MAP{
         path (reference)
 
     output:
-        tuple val(name), path ("*.sam")
+        tuple val(name), path ("*.cram")
 
     script:
     def software = getSoftwareName(task.process)
     //        -R \"${readGroup}\" \
     //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
-    def name = reads.get(0).baseName
+    def name = reads.get(0).simpleName
     """
-    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} -o ${name}.sam #| samtools sort -@ ${task.cpus} -o ${name}.cram 
+    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -o ${name}.cram 
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
     //samtools may need different memory setting -m 2G why not use task.memory
+    //    #| samtools sort -@ ${task.cpus} -o ${name}.cram 
+
 }

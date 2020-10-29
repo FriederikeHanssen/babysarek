@@ -27,4 +27,6 @@ process MERGE_BAM {
     """
     samtools merge --threads ${task.cpus} ${name_2}.cram ${cram}
     """
+    //TODO this could also be done with sambamba, which is apaprently much faster, all this tool replacement would require quiet a bit of benchmarking etc.
+    
 }

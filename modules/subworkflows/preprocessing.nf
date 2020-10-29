@@ -1,15 +1,17 @@
 
 params.seqkit_options        = [:]
 params.bwamem2_options       = [:]
-
+params.md_gatk_options       = [:] 
+params.md_adam_options       = [:] 
+params.md_sambamba_options       = [:] 
 
 include { SPLIT_FASTQ     } from '../local/splitfastq.nf' addParams( options: params.seqkit_options  )
 include { MAP     } from '../local/mapping.nf' addParams( options: params.bwamem2_options  )
 include { BWAMEM2_INDEX   } from '../local/index.nf'
 include { MERGE_BAM } from '../local/merge.nf' addParams( options: params.bwamem2_options  )
-// include { MD_GATK}
-// include { MD_ADAM}
-// include { MD_SAMBAMBA}
+include { MD_GATK} from '../local/md_gatk.nf' addParams( options: params.md_gatk_options  )
+include { MD_ADAM} from '../local/md_adam.nf' addParams( options: params.md_adam_options  )
+include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( options: params.md_sambamba_options  )
 
 workflow PREPROCESSING {
 
@@ -37,7 +39,10 @@ workflow PREPROCESSING {
         
         MAP(split_reads, fasta, BWAMEM2_INDEX.out) //BWAMEM2_MEM(reads_input, bwa, fasta, fai)
 
-        //MERGE_BAM(MAP.out)
+        //Does the channel have to be merged somehow?
+        MERGE_BAM(MAP.out)
+
+
 
     // Step 1
 
