@@ -29,8 +29,7 @@ process MD_ADAM{
     """
     adam-submit \
        --master local[${task.cpus}] \
-       --driver-memory ${task.memory.toGiga()} \
-       --executor-memory ${task.memory.toGiga()} \
+       --driver-memory ${task.memory.toGiga()}g \
        -- \
        transformAlignments \
        -mark_duplicate_reads \
