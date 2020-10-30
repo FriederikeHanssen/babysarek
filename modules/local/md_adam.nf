@@ -30,6 +30,7 @@ process MD_ADAM{
     adam-submit \
        --master local[${task.cpus}] \
        --driver-memory ${task.memory.toGiga()} \
+       --executor-memory ${task.memory.toGiga()} \
        -- \
        transformAlignments \
        -mark_duplicate_reads \
@@ -37,7 +38,8 @@ process MD_ADAM{
        ${cram} \
        ${cram.simpleName}.md.cram
     """
-
+    //--master <mysparkmaster> 
+    //\ --deploy-mode cluster \ --driver-memory 20g \ --executor-memory 20g \ --conf spark.driver.cores=16 \ --conf spark.executor.cores=16 \ --conf spark.yarn.executor.memoryOverhead=2048 \ --conf spark.executor.instances=3 \
     //  touch ${idSample}.bam.metrics
     //  samtools index ${idSample}.md.bam
 }
