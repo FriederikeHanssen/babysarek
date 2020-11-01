@@ -37,7 +37,7 @@ process MD_ADAM{
        ${cram.simpleName}.md.cram
     """
     //--master <mysparkmaster> 
-    //\ --deploy-mode cluster \ --driver-memory 20g \ --executor-memory 20g \ --conf spark.driver.cores=16 \ --conf spark.executor.cores=16 \ --conf spark.yarn.executor.memoryOverhead=2048 \ --conf spark.executor.instances=3 \
+    //\ --deploy-mode cluster \ --d river-memory 20g \ --executor-memory 20g \ --conf spark.driver.cores=16 \ --conf spark.executor.cores=16 \ --conf spark.yarn.executor.memoryOverhead=2048 \ --conf spark.executor.instances=3 \
     //  touch ${idSample}.bam.metrics
     //  samtools index ${idSample}.md.bam
 
