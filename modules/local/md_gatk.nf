@@ -35,7 +35,7 @@ process MD_GATK{
         -O ${cram.simpleName}.md.cram \
         -M ${cram.simpleName}.md.metrics \
         --reference ${reference} \
-        --tmp-dir . --create-output-bam-index false --spark-master local[${task.cpus}] 
+        --tmp-dir . --create-output-bam-index false --spark-master local[${task.cpus}] --conf 'spark.kryo.referenceTracking=false'
     """
     //  Prob not needed as I am using crams now      --create-output-bam-index true \
 
