@@ -10,11 +10,11 @@ process MD_GATK{
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'mark_duplicates', publish_id:'') }
 
-    conda (params.enable_conda ? "bioconda::gatk4-spark=4.1.9.0--0" : null)
+    conda (params.enable_conda ? "bioconda::gatk4-spark=4.1.8.1" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.9.0--0"
+        container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.8.1--0"
     } else {
-        container "quay.io/biocontainers/gatk4-spark:4.1.9.0--0"
+        container "quay.io/biocontainers/gatk4-spark:4.1.8.1--0"
     }
 
     input:
@@ -26,7 +26,7 @@ process MD_GATK{
 
     script:
     def software = getSoftwareName(task.process)
-    def markdup_java_options = task.memory.toGiga() > 8 ? params.markdup_java_options : "\"-Xms" +  (task.memory.toGiga() / 2).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
+    markdup_java_options = task.memory.toGiga() > 8 ? params.markdup_java_options : "\"-Xms" +  (task.memory.toGiga() / 2).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
 
     """
     gatk --java-options ${markdup_java_options} \
@@ -34,8 +34,7 @@ process MD_GATK{
         -I ${cram} \
         -O ${cram.simpleName}.md.cram \
         -M ${cram.simpleName}.md.metrics \
-        --reference ${reference} \
-        --tmp-dir . --create-output-bam-index false --spark-master local[${task.cpus}] --conf 'spark.kryo.referenceTracking=false'
+        --tmp-dir . --spark-master local[${task.cpus}]
     """
     //  Prob not needed as I am using crams now      --create-output-bam-index true \
 
