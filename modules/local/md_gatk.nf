@@ -20,6 +20,7 @@ process MD_GATK{
     input:
         tuple val(name), path(cram)
         path(reference)
+        path(dict)
 
     output:
         tuple val(name), path('*.md.cram')
@@ -34,6 +35,7 @@ process MD_GATK{
         -I ${cram} \
         -O ${cram.simpleName}.md.cram \
         -M ${cram.simpleName}.md.metrics \
+        --reference ${reference} \
         --tmp-dir . --spark-master local[${task.cpus}]
     """
     //  Prob not needed as I am using crams now      --create-output-bam-index true \

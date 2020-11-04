@@ -1,11 +1,13 @@
 
 params.seqkit_options        = [:]
+params.dict_options          = [:]
 params.bwamem2_options       = [:]
 params.md_gatk_options       = [:] 
 params.md_adam_options       = [:] 
 params.md_sambamba_options       = [:] 
 
 include { SPLIT_FASTQ     } from '../local/splitfastq.nf' addParams( options: params.seqkit_options  )
+include { DICT }            from '../local/gatk_createsequencedictionary' addParams( options: params.dict_options  )
 include { MAP     } from '../local/mapping.nf' addParams( options: params.bwamem2_options  )
 include { BWAMEM2_INDEX   } from '../local/index.nf'
 include { MERGE_BAM } from '../local/merge.nf' addParams( options: params.bwamem2_options  )
@@ -45,7 +47,8 @@ workflow PREPROCESSING {
         // merge_bam_out = MERGE_BAM.out
         // merge_bam_out.dump()
         if(params.gatk){
-            MD_GATK(MERGE_BAM.out, fasta)
+            DICT(fasta)
+            MD_GATK(MERGE_BAM.out, fasta, DICT.out)
         }else{
             MD_ADAM(MERGE_BAM.out, fasta)
         }
