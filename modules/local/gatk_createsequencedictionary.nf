@@ -1,10 +1,10 @@
-include { initOptions; saveFiles; getSoftwareName } from './../functions'
+include { initOptions; saveFiles; getSoftwareName } from './functions'
 
 params.options = [:]
 def options    = initOptions(params.options)
 
 process GATK_CREATESEQUENCEDICTIONARY {
-    
+
     publishDir params.outdir, mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:getSoftwareName(task.process), publish_id:"false") }
 
