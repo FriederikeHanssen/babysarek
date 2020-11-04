@@ -27,12 +27,16 @@ process MAP{
 
     script:
     def software = getSoftwareName(task.process)
-    //        -R \"${readGroup}\" \
     //extra = meta.status == 1 ? "-B 3" : "" when tumor than allow for a smaller mismatch penalty...why? will leave by default for now
     def name = reads.get(0).simpleName
     def part = reads.get(0).name.findAll(/part_([0-9]+)?/).last()
+
+    //TODO hard coded, needs fix eventually
+    def CN = ""
+    def readGroup = "@RG\\tID:1\\t${CN}PU:1\\tSM:${name}\\tLB:${name}\\tPL:ILLUMINA"
+
     """
-    bwa-mem2 mem ${options.args} -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -m 2G -o${name}.${part}.bam -
+    bwa-mem2 mem ${options.args} -R \"${readGroup}\" -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -m 2G -o${name}.${part}.bam -
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
     //samtools may need different memory setting -m 2G why not use task.memory
