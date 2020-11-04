@@ -21,6 +21,7 @@ process MD_GATK{
         tuple val(name), path(cram)
         path(reference)
         path(dict)
+        path(fai)
 
     output:
         tuple val(name), path('*.md.cram')
