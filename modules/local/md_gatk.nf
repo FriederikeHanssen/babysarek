@@ -20,8 +20,8 @@ process MD_GATK{
     input:
         tuple val(name), path(cram)
         path(reference)
-        path(dict)
-        path(fai)
+        path(dict) //need to be present in the path
+        path(fai)  //need to be present in the path
 
     output:
         tuple val(name), path('*.md.cram')

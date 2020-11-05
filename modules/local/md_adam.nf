@@ -33,6 +33,8 @@ process MD_ADAM{
        transformAlignments \
        -mark_duplicate_reads \
        -single \
+       -reference ${reference} \
+       -sort_by_reference_position \
        ${cram} \
        ${cram.simpleName}.md.cram
     """
