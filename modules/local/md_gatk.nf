@@ -13,6 +13,7 @@ process MD_GATK{
     conda (params.enable_conda ? "bioconda::gatk4-spark=4.1.8.1" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
         container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.8.1--0"
+        
     } else {
         container "quay.io/biocontainers/gatk4-spark:4.1.8.1--0"
     }
@@ -28,9 +29,11 @@ process MD_GATK{
 
     script:
     def software = getSoftwareName(task.process)
-    markdup_java_options = task.memory.toGiga() > 8 ? params.markdup_java_options : "\"-Xms" +  (task.memory.toGiga() / 2).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
+    markdup_java_options = task.memory.toGiga() > 8 ? params.markdup_java_options : "\"-Xms" +  (task.memory.toGiga() / 2   ).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
 
     """
+    export SPARK_LOCAL_IP=127.0.0.1
+    export SPARK_PUBLIC_DNS=127.0.0.1
     gatk --java-options ${markdup_java_options} \
         MarkDuplicatesSpark \
         -I ${cram} \
