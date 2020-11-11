@@ -3,16 +3,16 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 
 process BWAMEM2_INDEX {
     tag "${fasta}"
-    label 'process_medium'
+    label 'process_high'
     //publishDir "${params.outdir}",
     //   mode: params.publish_dir_mode,
     //  saveAs: { params.save_reference ? filename -> saveFiles(filename:filename, options:params.options, publish_dir:'reference_genome/BWAIndex/${it}', publish_id:'') : null}
     
-    conda (params.enable_conda ? "bioconda::bwa-mem2=2.0" : null)
+    conda (params.enable_conda ? "bioconda::bwa-mem2==2.0--he513fc3_1" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/bwa-mem2:2.0--he513fc3_0"
+        container "https://depot.galaxyproject.org/singularity/bwa-mem2:2.0--he513fc3_1"
     } else {
-        container "quay.io/biocontainers/bwa-mem2:2.0--he513fc3_0"
+        container "quay.io/biocontainers/bwa-mem2:2.0--he513fc3_1"
     }
 
     input:
