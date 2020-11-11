@@ -29,7 +29,7 @@ process MD_GATK{
 
     script:
     def software = getSoftwareName(task.process)
-    markdup_java_options = task.memory.toGiga() > 8 ? params.markdup_java_options : "\"-Xms" +  (task.memory.toGiga() / 2   ).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
+    markdup_java_options = "\"-Xms" +  (task.memory.toGiga() / 2   ).trunc() + "g -Xmx" + (task.memory.toGiga() - 1) + "g\""
 
     """
     export SPARK_LOCAL_IP=127.0.0.1
