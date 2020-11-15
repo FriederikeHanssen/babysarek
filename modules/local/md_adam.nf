@@ -22,6 +22,8 @@ process MD_ADAM{
         path(reference)
 
     output:
+        tuple val(name), path('*adam.md.cram')
+
 
     script:
     def software = getSoftwareName(task.process)
@@ -38,7 +40,7 @@ process MD_ADAM{
        -reference ${reference} \
        -sort_by_reference_position \
        ${cram} \
-       ${cram.simpleName}.md.cram
+       ${cram.simpleName}.adam.md.cram
     """
     //--master <mysparkmaster> 
     //\ --deploy-mode cluster \ --d river-memory 20g \ --executor-memory 20g \ --conf spark.driver.cores=16 \ --conf spark.executor.cores=16 \ --conf spark.yarn.executor.memoryOverhead=2048 \ --conf spark.executor.instances=3 \
