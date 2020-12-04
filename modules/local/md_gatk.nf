@@ -5,17 +5,17 @@ params.options = [:]
 def options    = initOptions(params.options)
 
 process MD_GATK{
-    label 'process_high'
+    label 'process_md'
     publishDir "${params.outdir}",
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'mark_duplicates', publish_id:'') }
 
-    conda (params.enable_conda ? "bioconda::gatk4-spark=4.1.8.1" : null)
+    conda (params.enable_conda ? "bioconda::gatk4-spark=4.1.9.0" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.8.1--0"
+        container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.9.0--0 "
         
     } else {
-        container "quay.io/biocontainers/gatk4-spark:4.1.8.1--0"
+        container "quay.io/biocontainers/gatk4-spark:4.1.9.1--0"
     }
 
     input:
@@ -34,6 +34,7 @@ process MD_GATK{
     """
     export SPARK_LOCAL_IP=127.0.0.1
     export SPARK_PUBLIC_DNS=127.0.0.1
+
     gatk --java-options ${markdup_java_options} \
         MarkDuplicatesSpark \
         -I ${cram} \
