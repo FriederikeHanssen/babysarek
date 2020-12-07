@@ -15,7 +15,7 @@ process MD_GATK{
         container "https://depot.galaxyproject.org/singularity/gatk4-spark:4.1.9.0--0 "
         
     } else {
-        container "quay.io/biocontainers/gatk4-spark:4.1.9.1--0"
+        container "quay.io/biocontainers/gatk4-spark:4.1.9.0--0"
     }
 
     input:
@@ -35,15 +35,17 @@ process MD_GATK{
     export SPARK_LOCAL_IP=127.0.0.1
     export SPARK_PUBLIC_DNS=127.0.0.1
 
-    gatk --java-options ${markdup_java_options} \
+    gatk  \
         MarkDuplicatesSpark \
         -I ${cram} \
         -O ${cram.simpleName}.md.cram \
         -M ${cram.simpleName}.md.metrics \
         --reference ${reference} \
-        --tmp-dir . --spark-master local[${task.cpus}]
+        --tmp-dir . 
     """
-    //  Prob not needed as I am using crams now      --create-output-bam-index true \
+    //--java-options ${markdup_java_options} 
+    //--spark-master local[${task.cpus}]  
+    //Prob not needed as I am using crams now      --create-output-bam-index true \
 
     //   export GATK_LOCAL_JAR=/root/gatk.jar
     // gatk --java-options "-Dsamjdk.compression_level=~{compression_level} -Xmx~{java_memory_size}g" \
