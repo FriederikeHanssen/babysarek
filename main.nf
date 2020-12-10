@@ -67,8 +67,13 @@ def modules = params.modules.clone()
                        INCLUDE LOCAL PIPELINE SUBWORKFLOWS
 ================================================================================
 */
-include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addParams( seqkit_options: modules['seqkit'],dict_options: modules['dict'], fai_options: modules['samtools_faidx'], bwamem2_options: modules['bwamem2'], md_gatk_options: modules['md_gatk'],
-md_adam_options: modules['md_adam'],md_sambamba_options: modules['md_sambamba'])
+include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addParams( seqkit_options: modules['seqkit'],
+                                                                                    dict_options: modules['dict'], 
+                                                                                    fai_options: modules['samtools_faidx'], 
+                                                                                    bwamem2_options: modules['bwamem2'], 
+                                                                                    md_gatk_options: modules['md_gatk'],
+                                                                                    md_adam_options: modules['md_adam'],
+                                                                                    md_sambamba_options: modules['md_sambamba'])
 /*
 ================================================================================
                         INCLUDE nf-core PIPELINE MODULES

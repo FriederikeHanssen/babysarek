@@ -10,13 +10,13 @@ process MAP{
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'mapping', publish_id:'') }
     
-    conda (params.enable_conda ? "bioconda::bwa-mem2=2.0 bioconda::samtools=1.10" : null)
+    conda (params.enable_conda ? "bioconda::bwa-mem2=2.1--he513fc3_0 bioconda::samtools=1.11--h6270b1f_0" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/mulled-v2-e5d375990341c5aef3c9aff74f96f66f65375ef6:876eb6f1d38fbf578296ea94e5aede4e317939e7-0" //version does not match with conda, but conda version is more up to date
+        container "https://depot.galaxyproject.org/singularity/mulled-v2-e5d375990341c5aef3c9aff74f96f66f65375ef6:e6f0d20c9d78572ddbbf00d8767ee6ff865edd4e-0" 
     } else {
-        container "quay.io/biocontainers/mulled-v2-e5d375990341c5aef3c9aff74f96f66f65375ef6:876eb6f1d38fbf578296ea94e5aede4e317939e7-0"//version does not match with conda, but conda version is more up to date
+        container "quay.io/biocontainers/mulled-v2-e5d375990341c5aef3c9aff74f96f66f65375ef6:e6f0d20c9d78572ddbbf00d8767ee6ff865edd4e-0"
     }
-
+    //TODO: double check the mulled container now is correct
     input:
         tuple val(name), path(reads)
         path(fasta)
@@ -36,7 +36,7 @@ process MAP{
     def readGroup = "@RG\\tID:1\\t${CN}PU:1\\tSM:${name}\\tLB:${name}\\tPL:ILLUMINA"
 
     """
-    bwa-mem2 mem ${options.args} -R \"${readGroup}\" -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -m 2G -o ${name}.${part}.bam -
+    bwa-mem2 mem ${options.args} -R \"${readGroup}\" -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -m ${task.memory} -o ${name}.${part}.bam -
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
     //samtools may need different memory setting -m 2G why not use task.memory
