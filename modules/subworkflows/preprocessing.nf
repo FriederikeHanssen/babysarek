@@ -13,6 +13,7 @@ include { SAMTOOLS_FAIDX }  from '../local/create_fai.nf' addParams( options: pa
 
 include { MAP     } from '../local/mapping.nf' addParams( options: params.bwamem2_options  )
 include { BWAMEM2_INDEX   } from '../local/index.nf'
+
 include { MERGE_CRAM } from '../local/merge_samtools.nf' addParams()
 include { MERGE_SAMTOOLS_BAM } from '../local/merge_samtools_standalone.nf' addParams()
 include { MERGE_SAMBAMBA_BAM } from '../local/merge_sambamba_standalone.nf' addParams()
@@ -20,10 +21,10 @@ include { MERGE_SAMBAMBA_BAM } from '../local/merge_sambamba_standalone.nf' addP
 include { MD_GATK} from '../local/md_gatk.nf' addParams( options: params.md_gatk_options  )
 include { MD_ADAM} from '../local/md_adam.nf' addParams( options: params.md_adam_options  )
 
-include { MD_GATK_BAM} from '../local/md_gatk_bam.nf' addParams( )
-include { MD_ADAM_BAM} from '../local/md_adam_bam.nf' addParams( )
-include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( )
-include { MD_SAMBLASTER} from '../local/md_samblaster.nf' addParams(  )
+include { MD_GATK_BAM} from '../local/md_gatk_bam.nf' //addParams( )
+include { MD_ADAM_BAM} from '../local/md_adam_bam.nf' //addParams( )
+include { MD_SAMBAMBA} from '../local/md_sambamba.nf' //addParams( )
+include { MD_SAMBLASTER} from '../local/md_samblaster.nf' //addParams(  )
 
 workflow PREPROCESSING {
 
