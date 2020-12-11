@@ -4,7 +4,7 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 params.options = [:]
 def options    = initOptions(params.options)
 
-process MD_ADAM{
+process MD_ADAM_BAM{
     label 'process_high'
     publishDir "${params.outdir}",
         mode: params.publish_dir_mode,
@@ -19,7 +19,6 @@ process MD_ADAM{
 
     input:
         tuple val(name), path(bam)
-        path(reference)
 
     output:
         tuple val(name), path('*adam.md.bam')
@@ -32,13 +31,14 @@ process MD_ADAM{
     export SPARK_LOCAL_IP=127.0.0.1
     export SPARK_PUBLIC_DNS=127.0.0.1
     adam-submit \
-       --master local[*] \
+       --master local[${task.cpus}] \
+       --driver-memory ${task.memory.toGiga()}g \
        -- \
        transformAlignments \
        -mark_duplicate_reads \
        -single \
-       -sort_by_reference_position \
-       ${bam} \
+       -stringency LENIENT \
+       ${bam}} \
        ${bam.simpleName}.adam.md.bam
     """
     //--master <mysparkmaster> 

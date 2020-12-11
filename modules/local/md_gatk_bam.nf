@@ -4,7 +4,7 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 params.options = [:]
 def options    = initOptions(params.options)
 
-process MD_GATK{
+process MD_GATK_BAM{
     label 'process_md'
     publishDir "${params.outdir}",
         mode: params.publish_dir_mode,
@@ -42,5 +42,6 @@ process MD_GATK{
         -O ${bam.simpleName}.md.bram \
     """
    // there is a lot to unpack here
-   //        --MAX_RECORDS_IN_RAM 50000 \ is this benchmarked somewhere?
+   //        --MAX_RECORDS_IN_RAM 50000 \ is this benchmarked somewhere? -> the number here seems to be 10x lower than the default number, whhy is that? try at least once with the default options
+
 }

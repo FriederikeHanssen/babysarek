@@ -4,31 +4,30 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 params.options = [:]
 def options    = initOptions(params.options)
 
-process MD_SAMBAMBA{
+process MD_SAMBLASTER{
     label 'process_high'
     publishDir "${params.outdir}",
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'mark_duplicates', publish_id:'') }
     
-    conda (params.enable_conda ? "bioconda::sambamba=0.7.1--h984e79f_3" : null)
+    conda (params.enable_conda ? "bioconda::samblaster=0.1.26--hc9558a2_0" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/sambamba:0.7.1--h984e79f_3"
+        container "https://depot.galaxyproject.org/singularity/samblaster:0.1.26--hc9558a2_0"
     } else {
-        container "quay.io/biocontainers/sambamba:0.7.1--h984e79f_3"
+        container "quay.io/biocontainers/samblaster:0.1.26--hc9558a2_0"
     }
 
     input:
         tuple val(name), path(bam)
 
     output:
-        tuple val(name), path('*sambamba.md.cram')
+        tuple val(name), path('*samblaster.md.bam')
 
     script:
     def software = getSoftwareName(task.process)
    
     """
-    sambamba --nthreads ${task.cpus} --tmpdir . ${bam} ${bam.simpleName}.md.bam
+    samblaster --ignoreUnmated
     """
-    //hashtablesize: > (average coverage) * (insert size) How to compute this
-    //remove duplicates??? 
+    //TODO: apparently this tools needs sam?
 }

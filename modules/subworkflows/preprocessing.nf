@@ -19,7 +19,11 @@ include { MERGE_SAMBAMBA_BAM } from '../local/merge_sambamba_standalone.nf' addP
 
 include { MD_GATK} from '../local/md_gatk.nf' addParams( options: params.md_gatk_options  )
 include { MD_ADAM} from '../local/md_adam.nf' addParams( options: params.md_adam_options  )
-//include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( options: params.md_sambamba_options  )
+
+include { MD_GATK_BAM} from '../local/md_gatk_bam.nf' addParams( )
+include { MD_ADAM_BAM} from '../local/md_adam_bam.nf' addParams( )
+include { MD_SAMBAMBA} from '../local/md_sambamba.nf' addParams( )
+include { MD_SAMBLASTER} from '../local/md_samblaster.nf' addParams(  )
 
 workflow PREPROCESSING {
 
@@ -78,15 +82,15 @@ workflow PREPROCESSING {
                 dict = params.dict ? file(params.dict) : DICT(fasta)
                 faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
 
-                duplicate_marked =
+                duplicate_marked = MD_GATK_BAM()
             }else {
                 if (params.md_adam){
-                    duplicate_marked =
+                    duplicate_marked = MD_ADAM_BAM()
                 }else{
                     if(params.md_sambamba){
-                            duplicate_marked = 
+                            duplicate_marked = MD_SAMBAMBA()
                         else { 
-                            duplicate_marked = 
+                            duplicate_marked = MD_SAMBLASTER()
                         }
                     }
                 }
