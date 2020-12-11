@@ -82,15 +82,15 @@ workflow PREPROCESSING {
                 dict = params.dict ? file(params.dict) : DICT(fasta)
                 faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
 
-                duplicate_marked = MD_GATK_BAM()
+                duplicate_marked = MD_GATK_BAM(merge_bam_out, dict, faidx)
             }else {
                 if (params.md_adam){
-                    duplicate_marked = MD_ADAM_BAM()
+                    duplicate_marked = MD_ADAM_BAM(merge_bam_out)
                 }else{
                     if(params.md_sambamba){
-                            duplicate_marked = MD_SAMBAMBA()
+                            duplicate_marked = MD_SAMBAMBA(merge_bam_out)
                         else { 
-                            duplicate_marked = MD_SAMBLASTER()
+                            duplicate_marked = MD_SAMBLASTER(merge_bam_out)
                         }
                     }
                 }
