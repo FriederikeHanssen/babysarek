@@ -4,8 +4,8 @@ params.dict_options          = [:]
 params.fai_options          = [:]
 params.bwamem2_options       = [:]
 params.bwamem2_index_options = [:]
-params.md_gatk_options       = [:] 
-params.md_adam_options       = [:] 
+// params.md_gatk_options       = [:] 
+// params.md_adam_options       = [:] 
 // params.md_sambamba_options       = [:] 
 
 include { SPLIT_FASTQ     } from '../local/splitfastq.nf' addParams( options: params.seqkit_options  )
@@ -15,7 +15,7 @@ include { SAMTOOLS_FAIDX }  from '../local/create_fai.nf' addParams( options: pa
 include { MAP     } from '../local/mapping.nf' addParams( options: params.bwamem2_options  )
 include { BWAMEM2_INDEX   } from '../local/index.nf' addParams ( options: params.bwamem2_index_options )
 
-// include { MERGE_CRAM } from '../local/merge_samtools.nf' //addParams()
+// include { MERGE_CRAM as MERGE_CRAM_SAMTOOLS } from '../local/merge_samtools.nf' //addParams()
 // include { MERGE_SAMTOOLS_BAM } from '../local/merge_samtools_standalone.nf' //addParams()
 // include { MERGE_SAMBAMBA_BAM } from '../local/merge_sambamba_standalone.nf' //addParams()
 
@@ -60,40 +60,42 @@ workflow PREPROCESSING {
 
         // Step 3: Merging Bams/Conversting Bams
         // Step 4: MarkDuplicates
-        duplicate_marked = Channel.empty()
-        if (params.cram) { //Convert to CRAM after merging (green path)
-            merge_cram_out = MERGE_CRAM(mapped_grouped, fasta)
+        // duplicate_marked = Channel.empty()
+        // if (params.cram) { //Convert to CRAM after merging (green path)
+        //     merge_cram_out = MERGE_CRAM_SAMTOOLS(mapped_grouped, fasta)
 
-            if(params.md_gatk){
-                dict = params.dict ? file(params.dict) : DICT(fasta)
-                faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
+        //     //TODO: insert: MERGE_CRAM_SAMBAMBA -> create mulled container for that
 
-                duplicate_marked = MD_GATK(merge_bam_out, fasta, dict, faidx)
-            }else{
-                if(params.md_adam){
-                    duplicate_marked = MD_ADAM(merge_bam_out, fasta)
-                }
-            }
-        } else{ //Merge, Convert to CRAM after MD (blue path)
-            merge_bam_out = params.merge_samtools ? MERGE_SAMTOOLS_BAM(mapped_grouped).out : MERGE_SAMBAMBA_BAM(mapped_grouped).out
-            //merge_bam_out.dump()
-            if (params.md_gatk){
-                dict = params.dict ? file(params.dict) : DICT(fasta)
-                faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
+        //     if(params.md_gatk){
+        //         dict = params.dict ? file(params.dict) : DICT(fasta)
+        //         faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
 
-                duplicate_marked = MD_GATK_BAM(merge_bam_out, dict, faidx)
-            }else {
-                if (params.md_adam){
-                    duplicate_marked = MD_ADAM_BAM(merge_bam_out)
-                }else{
-                    if(params.md_sambamba){
-                            duplicate_marked = MD_SAMBAMBA(merge_bam_out)
-                        else { 
-                            duplicate_marked = MD_SAMBLASTER(merge_bam_out)
-                        }
-                    }
-                }
-            }
+        //         duplicate_marked = MD_GATK(merge_bam_out, fasta, dict, faidx)
+        //     }else{
+        //         if(params.md_adam){
+        //             duplicate_marked = MD_ADAM(merge_bam_out, fasta)
+        //         }
+        //     }
+        // } else{ //Merge, Convert to CRAM after MD (blue path)
+        //     merge_bam_out = params.merge_samtools ? MERGE_SAMTOOLS_BAM(mapped_grouped).out : MERGE_SAMBAMBA_BAM(mapped_grouped).out
+        //     //merge_bam_out.dump()
+        //     if (params.md_gatk){
+        //         dict = params.dict ? file(params.dict) : DICT(fasta)
+        //         faidx = params.faidx ? file(params.faidx) : SAMTOOLS_FAIDX(fasta)
+
+        //         duplicate_marked = MD_GATK_BAM(merge_bam_out, dict, faidx)
+        //     }else {
+        //         if (params.md_adam){
+        //             duplicate_marked = MD_ADAM_BAM(merge_bam_out)
+        //         }else{
+        //             if(params.md_sambamba){
+        //                     duplicate_marked = MD_SAMBAMBA(merge_bam_out)
+        //                 else { 
+        //                     duplicate_marked = MD_SAMBLASTER(merge_bam_out)
+        //                 }
+        //             }
+        //         }
+        //     }
 
             //Convert bam to cram, possible piping directly from MD for speed up purposes?
 
