@@ -10,11 +10,11 @@ process SPLIT_FASTQ{
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'split_reads_seqkit', publish_id:'') }
     
-    conda (params.enable_conda ? "bioconda::seqkit=0.13.2" : null)
+    conda (params.enable_conda ? "bioconda::seqkit=0.14.0" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/seqkit:0.13.2--0"
+        container "https://depot.galaxyproject.org/singularity/seqkit:0.14.0--0"
     } else {
-        container "quay.io/biocontainers/seqkit:0.13.2--0"
+        container "quay.io/biocontainers/seqkit:0.14.0--0"
     }
 
     input:

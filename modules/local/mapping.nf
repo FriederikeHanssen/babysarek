@@ -36,11 +36,12 @@ process MAP{
     def readGroup = "@RG\\tID:1\\t${CN}PU:1\\tSM:${name}\\tLB:${name}\\tPL:ILLUMINA"
 
     """
-    bwa-mem2 mem ${options.args} -R \"${readGroup}\" -t ${task.cpus} ${fasta} ${reads} | samtools sort -@ ${task.cpus} -m ${task.memory} -o ${name}.${part}.bam -
+    bwa-mem2 mem ${options.args} -R \"${readGroup}\" -t ${task.cpus} ${fasta} ${reads} |
+     samtools sort -@ ${task.cpus} -m ${task.memory}G -o ${name}.${part}.bam -
     echo \$(bwa-mem2 version 2>&1) > bwa-mem2.version.txt
     """
+    //| samtools sort -@ ${task.cpus} -m ${task.memory} -o ${name}.${part}.bam -
     //samtools may need different memory setting -m 2G why not use task.memory
-    //  samtools sort -O bam -l 0 -T /tmp - | \
-//samtools view -T yeast.fasta -C -o yeast.cram - apparently crams can't be merged so do cram conversion after merging
+    // TODO: Do I need -T here? Where are tmo files written to?
 
 }
