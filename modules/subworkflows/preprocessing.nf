@@ -99,7 +99,7 @@ workflow PREPROCESSING {
 
             //Convert bam to cram, possible piping directly from MD for speed up purposes?
 
-        }
+        //}
 
 
 
