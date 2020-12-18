@@ -71,6 +71,7 @@ include { PREPROCESSING } from './modules/subworkflows/preprocessing.nf' addPara
                                                                                     dict_options: modules['dict'], 
                                                                                     fai_options: modules['samtools_faidx'], 
                                                                                     bwamem2_options: modules['bwamem2'], 
+                                                                                    bwamem2_index_options: modules['bwamem2_index'], 
                                                                                     md_gatk_options: modules['md_gatk'],
                                                                                     md_adam_options: modules['md_adam'],
                                                                                     md_sambamba_options: modules['md_sambamba'])
