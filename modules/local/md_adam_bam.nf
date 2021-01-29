@@ -10,11 +10,11 @@ process MD_ADAM_BAM{
         mode: params.publish_dir_mode,
         saveAs: { filename -> saveFiles(filename:filename, options:params.options, publish_dir:'mark_duplicates', publish_id:'') }
     
-    conda (params.enable_conda ? "bioconda::adam=0.32.0--0" : null)
+    conda (params.enable_conda ? "bioconda::adam=0.33.0--0" : null)
     if (workflow.containerEngine == 'singularity' && !params.pull_docker_container) {
-        container "https://depot.galaxyproject.org/singularity/adam:0.32.0--0"
+        container "https://depot.galaxyproject.org/singularity/adam:0.33.0--0"
     } else {
-        container "quay.io/biocontainers/adam:0.32.0--0"
+        container "quay.io/biocontainers/adam:0.33.0--0"
     }
 
     input:
@@ -33,12 +33,13 @@ process MD_ADAM_BAM{
     adam-submit \
        --master local[${task.cpus}] \
        --driver-memory ${task.memory.toGiga()}g \
+       --conf spark.local.dir=. \
        -- \
        transformAlignments \
        -mark_duplicate_reads \
        -single \
        -stringency LENIENT \
-       ${bam}} \
+       ${bam}\
        ${bam.simpleName}.adam.md.bam
     """
     //--master <mysparkmaster> 
@@ -47,5 +48,7 @@ process MD_ADAM_BAM{
     //  samtools index ${idSample}.md.bam
 
     //       --driver-memory ${task.memory.toGiga()}g \
+
+   
 
 }

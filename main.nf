@@ -131,7 +131,7 @@ workflow {
     //     .splitCsv(header:true, sep:',')
     //     .map { check_samplesheet_paths(it) }
     //     .set { ch_raw_reads }
-    ch_input.dump()
+    ch_input.dump(tag:'Input')
     if (params.nf){
         //OPTION 1: Use nextflow build in
         ch_input.splitFastq( by: 100000 , file:true, pe: true, compress: true).set{split_read_pairs}

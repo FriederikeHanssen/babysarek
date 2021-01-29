@@ -3,7 +3,7 @@ include { initOptions; saveFiles; getSoftwareName } from './functions'
 params.options = [:]
 def options    = initOptions(params.options)
 
-process MERGE_BAM {
+process MERGE_SAMTOOLS_BAM {
     label 'process_high'
 
     publishDir params.outdir, mode: params.publish_dir_mode,

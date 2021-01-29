@@ -21,13 +21,13 @@ process MD_SAMBAMBA{
         tuple val(name), path(bam)
 
     output:
-        tuple val(name), path('*sambamba.md.cram')
+        tuple val(name), path('*sambamba.md.bam')
 
     script:
     def software = getSoftwareName(task.process)
    
     """
-    sambamba --nthreads ${task.cpus} --tmpdir . ${bam} ${bam.simpleName}.md.bam
+    sambamba markdup --nthreads ${task.cpus} --tmpdir . ${bam} ${bam.simpleName}.sambamba.md.bam
     """
     //hashtablesize: > (average coverage) * (insert size) How to compute this
     //remove duplicates??? 
